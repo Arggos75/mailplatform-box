@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mailbox</title>
+    <link rel="stylesheet" th:href="@{/style.css}"/>
+</head>
+<body>
+
+<div class="container">
+    <header class="page-header">
+        <h1>&#9993; Mailbox</h1>
+        <span class="badge" th:text="${emails.size()} + ' messages'">0 messages</span>
+    </header>
+
+    <div th:if="${emails.isEmpty()}" class="empty-state">
+        <p>No messages found.</p>
+    </div>
+
+    <table th:unless="${emails.isEmpty()}">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Direction</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="email : ${emails}"
+                th:onclick="|window.location.href='@{/email/{id}(id=${email.id})}'|"
+                class="clickable-row">
+                <td class="from-cell" th:text="${email.fromAddr}">sender@example.com</td>
+                <td class="subject-cell">
+                    <a th:href="@{/email/{id}(id=${email.id})}"
+                       th:text="${email.subject != null and !email.subject.isBlank()} ? ${email.subject} : '(no subject)'"
+                       class="subject-link">(no subject)</a>
+                </td>
+                <td class="date-cell"
+                    th:text="${email.receivedAt != null} ? ${#temporals.format(email.receivedAt, 'dd MMM yyyy HH:mm')} : ''">
+                    01 Jan 2024 12:00
+                </td>
+                <td>
+                    <span th:if="${email.direction != null}"
+                          th:text="${email.direction}"
+                          th:classappend="${email.direction == 'inbound'} ? 'badge badge-inbound' : 'badge badge-outbound'">
+                        inbound
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

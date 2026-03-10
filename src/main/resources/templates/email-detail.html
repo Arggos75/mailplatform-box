@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${email.subject != null and !email.subject.isBlank()} ? ${email.subject} : '(no subject)'">Email Detail</title>
+    <link rel="stylesheet" th:href="@{/style.css}"/>
+</head>
+<body>
+
+<div class="container">
+
+    <a href="/" class="back-link">&#8592; Back to inbox</a>
+
+    <article class="email-detail">
+
+        <header class="email-header">
+            <h1 class="email-subject"
+                th:text="${email.subject != null and !email.subject.isBlank()} ? ${email.subject} : '(no subject)'">
+                Subject
+            </h1>
+
+            <dl class="meta-grid">
+                <dt>From</dt>
+                <dd th:text="${email.fromAddr}">from@example.com</dd>
+
+                <dt>To</dt>
+                <dd th:text="${email.toAddr}">to@example.com</dd>
+
+                <dt>Date</dt>
+                <dd th:text="${email.receivedAt != null} ? ${#temporals.format(email.receivedAt, 'dd MMMM yyyy, HH:mm z')} : 'unknown'">
+                    01 January 2024, 12:00 UTC
+                </dd>
+
+                <dt th:if="${email.direction != null}">Direction</dt>
+                <dd th:if="${email.direction != null}">
+                    <span th:text="${email.direction}"
+                          th:classappend="${email.direction == 'inbound'} ? 'badge badge-inbound' : 'badge badge-outbound'">
+                        inbound
+                    </span>
+                </dd>
+            </dl>
+        </header>
+
+        <section class="email-body">
+            <!--
+                Render priority:
+                1. body_html  — rendered as HTML (th:utext)
+                2. stripped_text — plain text fallback
+                3. body_plain  — raw plain text final fallback
+            -->
+            <div th:if="${email.bodyHtml != null and !email.bodyHtml.isBlank()}"
+                 class="body-html"
+                 th:utext="${email.bodyHtml}">
+            </div>
+            <pre th:unless="${email.bodyHtml != null and !email.bodyHtml.isBlank()}"
+                 th:if="${email.strippedText != null and !email.strippedText.isBlank()}"
+                 class="body-plain"
+                 th:text="${email.strippedText}">
+            </pre>
+            <pre th:unless="${(email.bodyHtml != null and !email.bodyHtml.isBlank())
+                           or (email.strippedText != null and !email.strippedText.isBlank())}"
+                 class="body-plain"
+                 th:text="${email.bodyPlain}">
+            </pre>
+        </section>
+
+    </article>
+
+</div>
+
+</body>
+</html>
