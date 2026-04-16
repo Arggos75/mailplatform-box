@@ -1,0 +1,5 @@
+[phases.build]
+cmds = ["mvn -B package -DskipTests"]
+
+[start]
+cmd = "java -jar target/mailplateform_box-1.0-SNAPSHOT.jar"
